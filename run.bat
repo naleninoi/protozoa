@@ -1,0 +1,1 @@
+start cmd.exe @cmd /k "nodemon --config settings.json --watch"

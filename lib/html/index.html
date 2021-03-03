@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Protozoa</title>
+        <script src="/socket.io/socket.io.js"></script>
+        <style>
+            #canvas {
+                box-shadow: 0 0 11px #00000047;
+                margin: 30px;
+            }
+        </style>
+    </head>
+    <body>
+        <h2 style="padding-left: 50px;">PROTOZOA MEDITATION GAME</h2>
+
+        <canvas id="canvas" width="500" height="500">
+
+        </canvas>
+        <script>
+            var socket = io();
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+            const bgColor = "black";
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, canvas.getAttribute('width'), canvas.getAttribute('height'));
+
+            socket.on('redraw', (data) => {
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(0, 0, canvas.getAttribute('width'), canvas.getAttribute('height'));
+                if (data.protozoa.length == 0) {
+                        ctx.font = "bold 30pt Courier";
+                        ctx.strokeStyle = "red";
+                        ctx.shadowColor = "#F00";
+                        ctx.shadowOffsetX = 5;
+                        ctx.shadowOffsetY = 5;
+                        ctx.shadowBlur = 5;
+                        ctx.strokeText("GAME OVER", 250, 170);
+                        window.alert('Game over!');
+                    };
+                data.protozoa.forEach(p => {
+                    const size = p.size;
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(p.x - size, p.y - size, size, size);
+                });
+                data.bacteria.forEach(b => {
+                    const size = 1;
+                    ctx.fillStyle = "white";
+                    ctx.fillRect(b.x - size, b.y - size, size, size);
+                });
+            });
+
+            canvas.addEventListener('click', e => {
+                socket.emit('feed', { x: e.clientX, y: e.clientY } );
+            }, false);
+            
+        </script>
+    </body>
+</html>
